@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "groupbuy_campaign_output_v2",
+  "name": "groupbuy_campaign_output_v2",
+  "strict": true,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["prompt_version", "selected_template", "campaign_title", "short_hook", "selling_point_bullets", "price_block", "campaign_period", "platform_versions", "image_plan", "video_plan", "missing_information", "compliance_warnings", "quality_checks"],
+    "properties": {
+      "prompt_version": { "type": "string", "enum": ["2.0"] },
+      "selected_template": { "type": "string", "enum": ["A_TRUST_REVIEW", "B_SCENARIO_SOLUTION", "C_PROMOTION", "D_STORY_UNBOXING", "E_COUNTDOWN"] },
+      "campaign_title": { "type": "string" },
+      "short_hook": { "type": "string" },
+      "selling_point_bullets": { "type": "array", "minItems": 3, "maxItems": 6, "items": { "type": "string" } },
+      "price_block": {
+        "type": "object", "additionalProperties": false,
+        "required": ["original_price", "group_price", "promotion_rule", "savings_text"],
+        "properties": {
+          "original_price": { "type": "string" }, "group_price": { "type": "string" },
+          "promotion_rule": { "type": "string" }, "savings_text": { "type": "string" }
+        }
+      },
+      "campaign_period": {
+        "type": "object", "additionalProperties": false,
+        "required": ["start_at", "end_at", "display_text"],
+        "properties": { "start_at": { "type": "string" }, "end_at": { "type": "string" }, "display_text": { "type": "string" } }
+      },
+      "platform_versions": {
+        "type": "array", "minItems": 1,
+        "items": {
+          "type": "object", "additionalProperties": false,
+          "required": ["platform", "full_post", "call_to_action", "hashtags"],
+          "properties": {
+            "platform": { "type": "string", "enum": ["FACEBOOK", "INSTAGRAM", "LINE"] },
+            "full_post": { "type": "string" }, "call_to_action": { "type": "string" },
+            "hashtags": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      },
+      "image_plan": {
+        "type": "object", "additionalProperties": false,
+        "required": ["enabled", "ratio", "prompt", "negative_requirements", "text_safe_area", "overlay_text"],
+        "properties": {
+          "enabled": { "type": "boolean" }, "ratio": { "type": "string" }, "prompt": { "type": "string" },
+          "negative_requirements": { "type": "array", "items": { "type": "string" } },
+          "text_safe_area": { "type": "string" }, "overlay_text": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "video_plan": {
+        "type": "object", "additionalProperties": false,
+        "required": ["enabled", "duration_seconds", "concept", "scenes", "voiceover", "generation_prompt"],
+        "properties": {
+          "enabled": { "type": "boolean" }, "duration_seconds": { "type": "integer" }, "concept": { "type": "string" },
+          "scenes": {
+            "type": "array",
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["scene_number", "duration_seconds", "visual", "camera", "voiceover", "overlay_text"],
+              "properties": {
+                "scene_number": { "type": "integer" }, "duration_seconds": { "type": "integer" },
+                "visual": { "type": "string" }, "camera": { "type": "string" },
+                "voiceover": { "type": "string" }, "overlay_text": { "type": "string" }
+              }
+            }
+          },
+          "voiceover": { "type": "string" }, "generation_prompt": { "type": "string" }
+        }
+      },
+      "missing_information": { "type": "array", "items": { "type": "string" } },
+      "compliance_warnings": { "type": "array", "items": { "type": "string" } },
+      "quality_checks": {
+        "type": "object", "additionalProperties": false,
+        "required": ["numbers_grounded", "required_phrases_included", "forbidden_claims_avoided", "scene_duration_valid"],
+        "properties": {
+          "numbers_grounded": { "type": "boolean" }, "required_phrases_included": { "type": "boolean" },
+          "forbidden_claims_avoided": { "type": "boolean" }, "scene_duration_valid": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}
+

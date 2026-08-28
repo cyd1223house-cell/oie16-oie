@@ -1,0 +1,6 @@
+{
+  "name": "團購文案產生器",
+  "description": "輸入商品資料，產生 Facebook、Instagram、LINE 團購文案與一致風格的圖片、影片 Prompt。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
