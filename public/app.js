@@ -2,7 +2,15 @@ const $=(q)=>document.querySelector(q),form=$("#form"),result=$("#result"),error
 const lines=(v)=>v.split(/\n|、/).map(x=>x.trim()).filter(Boolean);
 const iso=(v)=>new Date(v).toISOString();
 let referenceImages=[];
-fetch("/api/status").then(r=>r.json()).then(s=>{$("#mode").textContent=s.mode==="live"?`${s.provider==="gemini"?"Gemini":"OpenAI"} 已連線｜${s.model}`:"示範模式｜尚未設定 API Key"});
+fetch("/api/status").then(async r=>{
+  const contentType=r.headers.get("content-type");
+  if(contentType&&contentType.includes("application/json")){
+    return r.json();
+  }
+  return {mode:"demo",provider:"gemini",model:"gemini-2.5-flash"};
+}).then(s=>{$("#mode").textContent=s.mode==="live"?`${s.provider==="gemini"?"Gemini":"OpenAI"} 已連線｜${s.model}`:"示範模式｜尚未設定 API Key"}).catch(()=>{
+  $("#mode").textContent="示範模式｜尚未設定 API Key";
+});
 
 const actionRow=document.createElement("div");
 actionRow.className="generation-actions";
@@ -98,7 +106,18 @@ promptButton.addEventListener("click",async()=>{
 
 form.addEventListener("submit",async(e)=>{
   e.preventDefault();error.textContent="";submit.disabled=true;submit.textContent="產生中…";
-  try{const request=buildInput();const response=await fetch("/api/generate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(request)});const data=await response.json();if(!response.ok)throw new Error([data.error,...(data.details||[])].join("｜"));render(data.result,data.mode,request)}
+  try{
+    const request=buildInput();
+    const response=await fetch("/api/generate",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(request)});
+    const contentType=response.headers.get("content-type");
+    if(!contentType||!contentType.includes("application/json")){
+      const errorText=await response.text();
+      throw new Error(`伺服器回傳非 JSON 格式 (HTTP ${response.status}): ${errorText.slice(0, 150)}`);
+    }
+    const data=await response.json();
+    if(!response.ok)throw new Error([data.error,...(data.details||[])].join("｜"));
+    render(data.result,data.mode,request);
+  }
   catch(err){error.textContent=err.message}
   finally{submit.disabled=false;submit.textContent="產生團購素材"}
 });

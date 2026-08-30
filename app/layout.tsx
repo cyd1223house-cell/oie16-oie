@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "團購文案產生器",
-  description: "輸入商品資料，產生 Facebook、Instagram、LINE 團購文案與一致風格的圖片、影片 Prompt。",
+  description: "具備 AI Agent 全自動任務機器人、子代理矩陣管理、商品多規格庫存管理、自動防漏單與末五碼對帳、開團紀錄成效分析、團友 CRM、黑名單防護、自訂 LOGO 與品牌外觀、以及專屬前台開團訂購與消費者查單頁面。",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
