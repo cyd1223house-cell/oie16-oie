@@ -1,10 +1,10 @@
 import React from "react";
-import { X, Copy, Check, ThumbsUp, MessageCircle, Share2, Heart, Bookmark, Send } from "lucide-react";
+import { X, Copy, Check, ThumbsUp, MessageCircle, Share2, Heart, Bookmark, Send, Repeat2 } from "lucide-react";
 
 interface SocialMockupDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  platform: "facebook" | "instagram" | "line";
+  platform: "facebook" | "instagram" | "line" | "threads";
   title: string;
   body: string;
   hashtags?: string[];
@@ -26,7 +26,7 @@ export const SocialMockupDialog: React.FC<SocialMockupDialogProps> = ({
 
   if (!isOpen) return null;
 
-  const fullText = `${body}\n\n${hashtags.map((t) => (t.startsWith("#") ? t : `#${t}`)).join(" ")}`;
+  const fullText = `${body}${hashtags.length > 0 ? `\n\n${hashtags.map((t) => (t.startsWith("#") ? t : `#${t}`)).join(" ")}` : ""}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(fullText);
@@ -46,24 +46,33 @@ export const SocialMockupDialog: React.FC<SocialMockupDialogProps> = ({
                   ? "bg-blue-600"
                   : platform === "instagram"
                   ? "bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600"
+                  : platform === "threads"
+                  ? "bg-black"
                   : "bg-emerald-500"
               }`}
             />
             <h3 className="font-bold text-slate-800 text-base">
-              {title || (platform === "facebook" ? "Facebook 貼文擬真預覽" : platform === "instagram" ? "Instagram 視覺貼文預覽" : "LINE 社群推播訊息預覽")}
+              {title ||
+                (platform === "facebook"
+                  ? "Facebook 貼文擬真預覽"
+                  : platform === "instagram"
+                  ? "Instagram 視覺貼文預覽"
+                  : platform === "threads"
+                  ? "Threads 討論串擬真預覽"
+                  : "LINE 社群推播訊息預覽")}
             </h3>
           </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={handleCopy}
-              className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
+              className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 mr-1" />}
               {copied ? "已複製完整文案" : "一鍵複製"}
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -156,6 +165,45 @@ export const SocialMockupDialog: React.FC<SocialMockupDialogProps> = ({
                       {hashtags.map((h) => (h.startsWith("#") ? h : `#${h}`)).join(" ")}
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Threads Style */}
+            {platform === "threads" && (
+              <div className="text-xs sm:text-sm p-4 text-slate-900 font-sans">
+                <div className="flex items-start space-x-3">
+                  <div className="w-9 h-9 rounded-full bg-black text-white font-bold flex items-center justify-center text-sm shrink-0">
+                    @
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-900 text-xs">{brandName.replace(/\s+/g, "_").toLowerCase()}</span>
+                      <span className="text-[10px] text-slate-400">12分鐘</span>
+                    </div>
+                    <div className="mt-2 text-slate-800 whitespace-pre-wrap leading-relaxed text-xs sm:text-sm">
+                      {body}
+                    </div>
+                    {imageUrl && (
+                      <div className="mt-3 rounded-xl overflow-hidden border border-slate-200 aspect-4/3">
+                        <img src={imageUrl} alt="preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      </div>
+                    )}
+                    <div className="mt-3 flex items-center space-x-4 text-slate-700 text-xs">
+                      <span className="flex items-center space-x-1 cursor-pointer hover:text-rose-500">
+                        <Heart className="w-4 h-4" /> <span>84</span>
+                      </span>
+                      <span className="flex items-center space-x-1 cursor-pointer hover:text-indigo-600">
+                        <MessageCircle className="w-4 h-4" /> <span>29</span>
+                      </span>
+                      <span className="flex items-center space-x-1 cursor-pointer hover:text-emerald-600">
+                        <Repeat2 className="w-4 h-4" /> <span>14</span>
+                      </span>
+                      <span className="flex items-center space-x-1 cursor-pointer hover:text-blue-600">
+                        <Send className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

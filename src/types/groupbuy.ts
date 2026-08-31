@@ -115,11 +115,64 @@ export interface TaskPipelineStep {
   logs: string[];
 }
 
+export interface CategoryRoutingInfo {
+  detectedCategory: "食" | "衣" | "住" | "行" | "育" | "樂";
+  categoryLabel: string;
+  recommendedAngle: string;
+  allowedKeywords: string[];
+  forbiddenKeywords: string[];
+  visualStyle: string;
+}
+
+export interface VideoStoryboardShot {
+  sceneNumber: number;
+  timeRange: string;
+  name: string;
+  visualDescription: string;
+  audioVoiceover: string;
+  aiVideoPrompt: string;
+  cameraMovement?: string;
+}
+
+export interface VideoDurationStoryboard {
+  durationSec: number;
+  title: string;
+  tag: string;
+  sceneCount: number;
+  description: string;
+  shots: VideoStoryboardShot[];
+}
+
+export interface EnvironmentStylePreset {
+  id: string;
+  name: string;
+  nameEn: string;
+  tag: string;
+  description: string;
+  colorPalette: string[];
+  lighting: string;
+  midjourneyPrompt: string;
+  imageToImagePrompt: string;
+  generativeFillDirective: string;
+}
+
+export interface EnvironmentDirector {
+  defaultStyleId: string;
+  styles: EnvironmentStylePreset[];
+  productPlacementPrompt: string;
+  referenceImageDirective: string;
+  customEnvironmentText?: string;
+  customImageToImagePrompt?: string;
+  customGenerativeFillDirective?: string;
+  customMidjourneyPrompt?: string;
+}
+
 export interface MaterialPackResult {
   productName: string;
   generatedAt: string;
   brandName?: string;
   styleAngleName?: string;
+  categoryRouting?: CategoryRoutingInfo;
   deepAnalysis?: {
     corePainPoints: string[];
     sensoryHighlights: string[];
@@ -129,6 +182,7 @@ export interface MaterialPackResult {
     discountRate: number;
     savingsAmount: number;
   };
+  catchyHeadline?: string;
   facebookPost: {
     headline: string;
     body: string;
@@ -147,19 +201,45 @@ export interface MaterialPackResult {
     pricingSummary: string;
     callToAction: string;
   };
+  threadsPost?: {
+    headline: string;
+    body: string;
+    discussionHook: string;
+  };
+  edmCopy?: {
+    subject: string;
+    previewText: string;
+    body: string;
+  };
+  urgencyReminder?: string;
+  countdownClosing?: string;
+  faq?: Array<{
+    q: string;
+    a: string;
+  }>;
   imagePrompt: {
     subject: string;
     style: string;
     promptEn: string;
     aspectRatio: string;
     lighting: string;
+    prompt1_closeUp?: string;
+    prompt1_closeUp_zh?: string;
+    prompt2_lifestyle?: string;
+    prompt2_lifestyle_zh?: string;
+    poster_copySpace?: string;
+    poster_copySpace_zh?: string;
   };
   videoPrompt: {
     concept: string;
     scenePlan: string[];
     promptEn: string;
     durationSec: number;
+    shots?: VideoStoryboardShot[];
+    availableDurations?: number[];
+    durationStoryboards?: Record<number, VideoDurationStoryboard>;
   };
+  environmentDirector?: EnvironmentDirector;
   communityNotification: {
     launchPreheat: string;
     closingReminder: string;

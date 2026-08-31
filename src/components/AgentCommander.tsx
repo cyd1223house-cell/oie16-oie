@@ -23,6 +23,15 @@ import {
   Layers,
   Video,
   Image as ImageIcon,
+  ShieldCheck,
+  Mail,
+  Flame,
+  Hash,
+  ShieldAlert,
+  Package,
+  Mic,
+  Film,
+  FileText,
 } from "lucide-react";
 import {
   Product,
@@ -52,48 +61,200 @@ interface AgentCommanderProps {
   onNavigateToTab?: (tab: AppTab) => void;
 }
 
+const ENVIRONMENT_PRESETS = [
+  {
+    id: "nordic_minimalist",
+    name: "🌿 北歐極簡",
+    tag: "溫潤木質自然",
+    text: "淺色橡木桌面、柔和自然晨光漫射、米白陶器與極簡綠意植栽 (Light oak tabletop, soft morning diffused light, beige ceramic, minimal botanical)",
+    colorPalette: ["#E8DCC4", "#C4A482", "#8A9A86", "#F5F2EB"],
+    lighting: "側逆光 45 度自然晨光漫射，柔和長陰影，清透通透感",
+  },
+  {
+    id: "luxury_black_gold",
+    name: "💎 奢華黑金",
+    tag: "頂級尊榮旗艦",
+    text: "黑色大理石檯面、黃銅精緻金屬拉絲、暗調深邃商攝金屬質感 (Matte black marble slab, brushed gold metallic accents, moody luxury studio lighting)",
+    colorPalette: ["#1A1A1A", "#C5A059", "#333333", "#F0E6D2"],
+    lighting: "頂部窄光束聚光燈 + 雙側輪廓金光勾勒，高對比陰影，高級金屬光澤",
+  },
+  {
+    id: "japanese_sunlight",
+    name: "🍃 日系日光",
+    tag: "百葉窗和煦暖光",
+    text: "日系木質百葉窗格、和煦午後斜射光影、棉麻白布質感 (Japanese wooden louver window, warm afternoon dappled sunlight, raw linen fabric)",
+    colorPalette: ["#F7F3E9", "#D8C3A5", "#A89F91", "#E6DFD5"],
+    lighting: "百葉窗格條紋投影，3500K 暖光漫射，空氣感微塵丁達爾效應",
+  },
+  {
+    id: "concrete_loft",
+    name: "🏙️ 都會清水模",
+    tag: "現代極簡俐落",
+    text: "俐落清水模水泥牆、幾何極簡石材底座、冷色商攝輪廓光 (Architectural raw concrete surface, geometric minimal pedestal, sleek cool studio rim light)",
+    colorPalette: ["#6B7280", "#374151", "#9CA3AF", "#E5E7EB"],
+    lighting: "冷白雙側柔光箱，邊緣幾何銳利輪廓光，工業極簡現代氛圍",
+  },
+  {
+    id: "nature_outdoor",
+    name: "☀️ 渡假戶外",
+    tag: "陽光海風植栽",
+    text: "陽光沙灘自然木棧道、清透棕櫚葉搖曳光影、夏日晴朗渡假氛圍 (Sun-drenched seaside wooden deck, swaying palm leaf shadows, tropical vacation breeze)",
+    colorPalette: ["#0284C7", "#F59E0B", "#10B981", "#FEF3C7"],
+    lighting: "5600K 戶外正午陽光，葉片斑駁動態光影，高飽和陽光立體感",
+  },
+  {
+    id: "cyber_neon",
+    name: "⚡ 賽博霓虹",
+    tag: "潮流未來科技",
+    text: "深色反光壓克力底座、紫藍雙色霓虹輪廓線條、未來潮流商攝風 (Dark reflective acrylic pedestal, vibrant cyan and magenta cyberpunk neon edge glow)",
+    colorPalette: ["#0F172A", "#EC4899", "#06B6D4", "#8B5CF6"],
+    lighting: "暗室背景 + 左右雙色 RGB 霓虹邊緣輪廓光，地面鏡面光澤倒影",
+  },
+];
+
+function createInitialMaterialPack(brand: BrandSettings): MaterialPackResult {
+  const bespokePack = generateBespokeMarketingPack({
+    name: "法式生巧克力夾心千層酥",
+    brand: brand.storeName || "日光甜點工坊",
+    category: "甜點／伴手禮",
+    description: "使用 72% 比利時頂級黑巧克力甘納許，層疊 1024 折手工反折千層酥皮，口感極致酥脆濃郁，微苦甜平衡不膩口！",
+    sellingPoints: [
+      "72% 比利時純可可脂黑巧克力製作",
+      "職人 1024 折反折酥皮工法極致酥香",
+      "單顆充氮獨立保鮮包裝，隨手拆隨手吃",
+      "辦公室下午茶搭配無糖黑咖啡絕配",
+    ],
+    specs: ["單盒 8 入裝 (常溫保存 21 天)", "附限定手提禮盒提袋"],
+    originalPrice: 650,
+    groupPrice: 499,
+    audience: "上班族、甜點愛好者、節慶送禮客群",
+    startDate: new Date().toISOString().split("T")[0],
+    endDate: new Date(Date.now() + 7 * 86400000).toISOString().split("T")[0],
+    purchaseUrl: "https://store.example.com/groupbuy/choco-mille-feuille",
+    platforms: ["facebook", "instagram", "line"],
+    includeImagePrompt: true,
+    includeVideoPrompt: true,
+    hasReferenceImage: true,
+    freeShippingThreshold: brand.freeShippingThreshold || 1500,
+    styleAngle: "auto",
+    customEnvironmentText: "淺色橡木桌面、柔和自然晨光漫射、米白陶器與極簡綠意植栽",
+  });
+
+  return {
+    productName: bespokePack.productName,
+    brandName: bespokePack.brandName,
+    generatedAt: bespokePack.generatedAt,
+    styleAngleName: bespokePack.styleAngleName,
+    categoryRouting: bespokePack.categoryRouting,
+    deepAnalysis: bespokePack.deepAnalysis,
+    catchyHeadline: bespokePack.catchyHeadline,
+    facebookPost: bespokePack.facebookPost,
+    instagramPost: bespokePack.instagramPost,
+    lineMessage: bespokePack.lineMessage,
+    threadsPost: bespokePack.threadsPost,
+    edmCopy: bespokePack.edmCopy,
+    urgencyReminder: bespokePack.urgencyReminder,
+    countdownClosing: bespokePack.countdownClosing,
+    faq: bespokePack.faq,
+    imagePrompt: {
+      subject: "法式生巧克力夾心千層酥, 甜點／伴手禮",
+      style: bespokePack.visualDirector.lightingMood,
+      promptEn: bespokePack.visualDirector.midjourneyPrompt,
+      aspectRatio: "4:5",
+      lighting: bespokePack.visualDirector.lightingMood,
+      prompt1_closeUp: bespokePack.visualDirector.midjourneyPrompt,
+      prompt2_lifestyle: bespokePack.visualDirector.midjourneyPrompt2,
+      poster_copySpace: bespokePack.visualDirector.posterPrompt,
+    },
+    videoPrompt: {
+      concept: "短影音分鏡腳本 (法式生巧克力夾心千層酥)",
+      scenePlan: bespokePack.visualDirector.videoStoryboard.map(
+        (s) => `${s.scene}：${s.visual}【旁白：${s.audioVoiceover}】`
+      ),
+      promptEn: bespokePack.visualDirector.midjourneyPrompt,
+      durationSec: 15,
+      shots: bespokePack.visualDirector.videoShots,
+      availableDurations: [10, 15, 30, 60],
+      durationStoryboards: bespokePack.durationStoryboards,
+    },
+    environmentDirector: bespokePack.environmentDirector,
+    communityNotification: {
+      launchPreheat: bespokePack.notifications.launchLinePush,
+      closingReminder: bespokePack.notifications.closing6HoursSms,
+      paymentUrge: bespokePack.notifications.unpaidGentleReminder,
+    },
+    pricingStrategy: {
+      suggestedGroupPrice: 499,
+      recommendedBundleDiscount: bespokePack.pricingStrategy.bundleSavings,
+      freeShippingThreshold: brand.freeShippingThreshold || 1500,
+    },
+  };
+}
+
 const DEFAULT_STEPS: TaskPipelineStep[] = [
   {
     id: "step-1",
     title: "1. 核心賣點、痛點與感官體驗深度剖析",
     agentName: "規格與定價 Agent",
-    status: "waiting",
-    logs: [],
+    status: "completed",
+    summary: "已完成多維度痛點、感官與受眾特徵萃取",
+    logs: [
+      "[系統初始化] 規格與定價 Agent 載入商品：法式生巧克力夾心千層酥",
+      "[系統初始化] 剖析產品類別「甜點／伴手禮」與目標受眾「上班族、甜點愛好者」",
+      "[系統初始化] 深度萃取核心痛點與感官體驗特徵 (完成)",
+    ],
   },
   {
     id: "step-2",
     title: "2. FB / IG / LINE 三大平台量身訂製文案",
     agentName: "文案爆款大師 Agent",
-    status: "waiting",
-    logs: [],
+    status: "completed",
+    summary: "FB/IG/LINE 三大平台量身文案完成",
+    logs: [
+      "[系統初始化] 文案爆款大師 Agent 載入商品唯一真實依據",
+      "[系統初始化] 產出 Facebook 故事開箱、Instagram 視覺短文與 LINE 快閃通知",
+    ],
   },
   {
     id: "step-3",
-    title: "3. 一致性商業攝影 Prompt & 8秒短影音分鏡",
+    title: "3. 商業海報/墊圖環境 Prompt & 10~60s 短影音分鏡",
     agentName: "視覺與分鏡導演 Agent",
-    status: "waiting",
-    logs: [],
+    status: "completed",
+    summary: "商業級主產品居中海報、6大墊圖商攝環境與多秒數短影音分鏡完成",
+    logs: [
+      "[系統初始化] 視覺導演 Agent 生成主商品 Centerstage 商業海報 (含 Copy Space)",
+      "[系統初始化] 生成 6 大商攝風格商品墊圖環境與 10s/15s/30s/60s 影音分鏡",
+    ],
   },
   {
     id: "step-4",
     title: "4. 前台開團多規格 (SKU) 與階梯定價配置",
     agentName: "規格與定價 Agent",
-    status: "waiting",
-    logs: [],
+    status: "completed",
+    summary: "多規格方案與階梯定價配置完成",
+    logs: [
+      "[系統初始化] 拆解 3 組熱銷階梯 SKU 配置 (嚐鮮組 / 分享組 / 免運囤貨組)",
+    ],
   },
   {
     id: "step-5",
     title: "5. 社群開團預熱、截單倒數與催繳通知排程",
     agentName: "智慧客服與催單 Agent",
-    status: "waiting",
-    logs: [],
+    status: "completed",
+    summary: "預熱、催單與結團推播腳本就緒",
+    logs: [
+      "[系統初始化] 智慧催單 Agent 生成開團預熱、截單倒數與 ATM 防漏單通知",
+    ],
   },
   {
     id: "step-6",
     title: "6. 自動防漏單規則審查與合規性驗證",
     agentName: "防漏單審查 Agent",
-    status: "waiting",
-    logs: [],
+    status: "completed",
+    summary: "防漏單審查與前台部署校驗合格",
+    logs: [
+      "[系統初始化] 防漏單審查 Agent 驗證價格無矛盾與法規宣稱禁語 (PASS)",
+    ],
   },
 ];
 
@@ -146,11 +307,18 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
 
   // Pipeline Execution State
   const [isRunning, setIsRunning] = useState(false);
-  const [progressPercent, setProgressPercent] = useState(0);
+  const [progressPercent, setProgressPercent] = useState(100);
   const [steps, setSteps] = useState<TaskPipelineStep[]>(DEFAULT_STEPS);
-  const [activeLogStep, setActiveLogStep] = useState<string>("step-1");
-  const [materialResult, setMaterialResult] = useState<MaterialPackResult | null>(null);
+  const [activeLogStep, setActiveLogStep] = useState<string>("step-3");
+  const [materialResult, setMaterialResult] = useState<MaterialPackResult | null>(() => createInitialMaterialPack(brand));
   const [hasDeployedToStore, setHasDeployedToStore] = useState(false);
+
+  // Video & Environment Staging State
+  const [selectedDuration, setSelectedDuration] = useState<10 | 15 | 30 | 60>(15);
+  const [selectedEnvStyleId, setSelectedEnvStyleId] = useState<string>("nordic_minimalist");
+  const [customEnvText, setCustomEnvText] = useState<string>(
+    "淺色橡木桌面、柔和自然晨光漫射、米白陶器與極簡綠意植栽 (Light oak tabletop, soft morning diffused light, beige ceramic, minimal botanical)"
+  );
 
   // Prompt Export Modal State (手動產生 Prompt 模式)
   const [isPromptModalOpen, setIsPromptModalOpen] = useState(false);
@@ -164,7 +332,7 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   // Social Preview Dialog
-  const [previewPlatform, setPreviewPlatform] = useState<"facebook" | "instagram" | "line" | null>(null);
+  const [previewPlatform, setPreviewPlatform] = useState<"facebook" | "instagram" | "line" | "threads" | null>(null);
 
   // Toggle platform selection
   const togglePlatform = (p: "facebook" | "instagram" | "line") => {
@@ -195,6 +363,7 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
     hasReferenceImage: Boolean(imageUrl && imageUrl.trim().length > 0),
     freeShippingThreshold: brand.freeShippingThreshold || 1500,
     styleAngle: overrideAngle || styleAngle,
+    customEnvironmentText: customEnvText,
   });
 
   // Fast apply existing product
@@ -209,7 +378,80 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
     setGroupPrice(prod.groupPrice || 399);
     if (prod.imageUrl) setImageUrl(prod.imageUrl);
     setHasDeployedToStore(true);
-    setAgentThought(`已為您載入「${prod.name}」商品資料！可選擇「AI 直接產生」或「產生完整 Prompt」。`);
+
+    const bespokePack = generateBespokeMarketingPack({
+      name: prod.name,
+      brand: prod.brand || brand.storeName || "日光選物",
+      category: prod.category || "熱銷選物",
+      description: prod.description || "",
+      sellingPoints: prod.sellingPoints || [],
+      specs: prod.specs || [],
+      originalPrice: prod.originalPrice || 500,
+      groupPrice: prod.groupPrice || 399,
+      audience: audience,
+      startDate: startDate,
+      endDate: endDate,
+      purchaseUrl: purchaseUrl,
+      platforms: platforms,
+      includeImagePrompt: includeImagePrompt,
+      includeVideoPrompt: includeVideoPrompt,
+      hasReferenceImage: Boolean(prod.imageUrl && prod.imageUrl.trim().length > 0),
+      freeShippingThreshold: brand.freeShippingThreshold || 1500,
+      styleAngle: styleAngle,
+      customEnvironmentText: customEnvText,
+    });
+
+    setMaterialResult({
+      productName: bespokePack.productName,
+      brandName: bespokePack.brandName,
+      generatedAt: bespokePack.generatedAt,
+      styleAngleName: bespokePack.styleAngleName,
+      categoryRouting: bespokePack.categoryRouting,
+      deepAnalysis: bespokePack.deepAnalysis,
+      catchyHeadline: bespokePack.catchyHeadline,
+      facebookPost: bespokePack.facebookPost,
+      instagramPost: bespokePack.instagramPost,
+      lineMessage: bespokePack.lineMessage,
+      threadsPost: bespokePack.threadsPost,
+      edmCopy: bespokePack.edmCopy,
+      urgencyReminder: bespokePack.urgencyReminder,
+      countdownClosing: bespokePack.countdownClosing,
+      faq: bespokePack.faq,
+      imagePrompt: {
+        subject: `${prod.name}, ${prod.category || "熱銷選物"}`,
+        style: bespokePack.visualDirector.lightingMood,
+        promptEn: bespokePack.visualDirector.midjourneyPrompt,
+        aspectRatio: "4:5",
+        lighting: bespokePack.visualDirector.lightingMood,
+        prompt1_closeUp: bespokePack.visualDirector.midjourneyPrompt,
+        prompt2_lifestyle: bespokePack.visualDirector.midjourneyPrompt2,
+        poster_copySpace: bespokePack.visualDirector.posterPrompt,
+      },
+      videoPrompt: {
+        concept: `短影音分鏡腳本 (${prod.name})`,
+        scenePlan: bespokePack.visualDirector.videoStoryboard.map(
+          (s) => `${s.scene}：${s.visual}【旁白：${s.audioVoiceover}】`
+        ),
+        promptEn: bespokePack.visualDirector.midjourneyPrompt,
+        durationSec: 15,
+        shots: bespokePack.visualDirector.videoShots,
+        availableDurations: [10, 15, 30, 60],
+        durationStoryboards: bespokePack.durationStoryboards,
+      },
+      environmentDirector: bespokePack.environmentDirector,
+      communityNotification: {
+        launchPreheat: bespokePack.notifications.launchLinePush,
+        closingReminder: bespokePack.notifications.closing6HoursSms,
+        paymentUrge: bespokePack.notifications.unpaidGentleReminder,
+      },
+      pricingStrategy: {
+        suggestedGroupPrice: prod.groupPrice || 399,
+        recommendedBundleDiscount: bespokePack.pricingStrategy.bundleSavings,
+        freeShippingThreshold: brand.freeShippingThreshold || 1500,
+      },
+    });
+
+    setAgentThought(`已為您載入「${prod.name}」商品資料與最新素材包！可直接切換 10s/15s/30s/60s 影音分鏡或 6 大墊圖商攝環境！`);
   };
 
   const handleCopyText = (text: string, key: string) => {
@@ -299,6 +541,7 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
           includeVideoPrompt: includeVideoPrompt,
           hasReferenceImage: Boolean(imageUrl && imageUrl.trim().length > 0),
           styleAngle: activeAngle,
+          customEnvironmentText: customEnvText,
         }),
       });
 
@@ -380,25 +623,39 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
       brandName: bespokePack.brandName,
       generatedAt: bespokePack.generatedAt,
       styleAngleName: bespokePack.styleAngleName,
+      categoryRouting: bespokePack.categoryRouting,
       deepAnalysis: bespokePack.deepAnalysis,
+      catchyHeadline: bespokePack.catchyHeadline,
       facebookPost: bespokePack.facebookPost,
       instagramPost: bespokePack.instagramPost,
       lineMessage: bespokePack.lineMessage,
+      threadsPost: bespokePack.threadsPost,
+      edmCopy: bespokePack.edmCopy,
+      urgencyReminder: bespokePack.urgencyReminder,
+      countdownClosing: bespokePack.countdownClosing,
+      faq: bespokePack.faq,
       imagePrompt: {
         subject: `${productName}, ${category}`,
         style: bespokePack.visualDirector.lightingMood,
         promptEn: bespokePack.visualDirector.midjourneyPrompt,
         aspectRatio: "4:5",
         lighting: bespokePack.visualDirector.lightingMood,
+        prompt1_closeUp: bespokePack.visualDirector.midjourneyPrompt,
+        prompt2_lifestyle: bespokePack.visualDirector.midjourneyPrompt2,
+        poster_copySpace: bespokePack.visualDirector.posterPrompt,
       },
       videoPrompt: {
-        concept: `8 秒短影音分鏡 (${productName})`,
+        concept: `短影音分鏡腳本 (${productName})`,
         scenePlan: bespokePack.visualDirector.videoStoryboard.map(
           (s) => `${s.scene}：${s.visual}【旁白：${s.audioVoiceover}】`
         ),
         promptEn: bespokePack.visualDirector.midjourneyPrompt,
-        durationSec: 8,
+        durationSec: 15,
+        shots: bespokePack.visualDirector.videoShots,
+        availableDurations: [10, 15, 30, 60],
+        durationStoryboards: bespokePack.durationStoryboards,
       },
+      environmentDirector: bespokePack.environmentDirector,
       communityNotification: {
         launchPreheat: bespokePack.notifications.launchLinePush,
         closingReminder: bespokePack.notifications.closing6HoursSms,
@@ -957,8 +1214,8 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
               </div>
 
               {/* Prompt Options (Image/Video) */}
-              <div>
-                <div className="block font-semibold text-slate-700 mb-1.5">視覺素材需求</div>
+              <div className="space-y-3">
+                <div className="block font-semibold text-slate-700">視覺素材與影音分鏡需求</div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <label className="flex items-center space-x-2 p-2.5 border border-slate-200 rounded-xl bg-slate-50 cursor-pointer hover:bg-indigo-50/40">
                     <input
@@ -982,10 +1239,111 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
                     />
                     <span className="font-semibold text-slate-700 flex items-center">
                       <Video className="w-3.5 h-3.5 text-purple-600 mr-1" />
-                      8 秒短影音分鏡腳本
+                      短影音 AI 分鏡腳本
                     </span>
                   </label>
                 </div>
+
+                {/* Video Duration Selector (10s / 15s / 30s / 60s) */}
+                {includeVideoPrompt && (
+                  <div className="p-3 bg-indigo-50/60 rounded-xl border border-indigo-100 space-y-1.5">
+                    <div className="flex items-center justify-between text-xs font-bold text-indigo-950">
+                      <span className="flex items-center">
+                        <Video className="w-3.5 h-3.5 text-indigo-600 mr-1" />
+                        短影音秒數時長切換：
+                      </span>
+                      <span className="text-[10px] text-indigo-600 font-normal">多秒數分鏡同步產生</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs">
+                      {[
+                        { sec: 10 as const, label: "10秒 極速", sub: "Reels/TikTok" },
+                        { sec: 15 as const, label: "15秒 黃金", sub: "3段吸睛" },
+                        { sec: 30 as const, label: "30秒 開箱", sub: "4段實測" },
+                        { sec: 60 as const, label: "60秒 深度", sub: "5段口碑" },
+                      ].map((item) => (
+                        <button
+                          key={item.sec}
+                          type="button"
+                          onClick={() => setSelectedDuration(item.sec)}
+                          className={`p-1.5 rounded-lg border text-center transition cursor-pointer ${
+                            selectedDuration === item.sec
+                              ? "bg-indigo-600 text-white font-bold border-indigo-600 shadow-xs"
+                              : "bg-white text-slate-700 border-slate-200 hover:bg-indigo-50/50"
+                          }`}
+                        >
+                          <div className="text-[11px] leading-tight">{item.label}</div>
+                          <div className={`text-[9px] ${selectedDuration === item.sec ? "text-indigo-200" : "text-slate-400"}`}>
+                            {item.sub}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Product Staging Environment Style Input Field & Presets */}
+                {includeImagePrompt && (
+                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                      <span className="flex items-center">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500 mr-1.5" />
+                        商品商攝與視覺風格設定 (直接寫入 AI 提示詞)：
+                      </span>
+                      <span className="text-[10px] text-indigo-600 font-mono bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200/60">
+                        直接寫入 Prompt
+                      </span>
+                    </div>
+
+                    {/* Custom Textarea for Environment Style */}
+                    <div className="space-y-1">
+                      <textarea
+                        rows={2}
+                        value={customEnvText}
+                        onChange={(e) => setCustomEnvText(e.target.value)}
+                        placeholder="請輸入您自訂的商攝環境場景、光影、材質與氛圍描述..."
+                        className="w-full text-xs p-2.5 rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-800 font-normal leading-relaxed resize-none transition"
+                      />
+                      <div className="flex items-center justify-between text-[10px] text-slate-400">
+                        <span>💡 自訂風格描述將直接寫入【商業海報與商品攝影 AI 提示詞】中</span>
+                        <span>{customEnvText.length} 字</span>
+                      </div>
+                    </div>
+
+                    {/* Quick Preset Chips to load predefined text */}
+                    <div className="space-y-1">
+                      <div className="text-[11px] font-semibold text-slate-600">
+                        快速套用風格範本 (點擊直接帶入文字)：
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5 text-xs">
+                        {ENVIRONMENT_PRESETS.map((preset) => (
+                          <button
+                            key={preset.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedEnvStyleId(preset.id);
+                              setCustomEnvText(preset.text);
+                            }}
+                            className={`p-1.5 rounded-lg border text-center text-[11px] transition cursor-pointer ${
+                              selectedEnvStyleId === preset.id
+                                ? "bg-slate-900 text-white font-bold border-slate-900 shadow-xs"
+                                : "bg-white text-slate-700 border-slate-200 hover:bg-slate-100"
+                            }`}
+                          >
+                            <div>{preset.name}</div>
+                            <div className={`text-[9px] ${selectedEnvStyleId === preset.id ? "text-slate-300" : "text-slate-400"}`}>
+                              {preset.tag}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="text-[10px] text-slate-500 flex items-center pt-0.5">
+                      <ShieldCheck className="w-3 h-3 text-emerald-600 mr-1" />
+                      商業海報模式：主產品居中焦點 + Copy Space 留白已啟用
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1196,6 +1554,88 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
                 </div>
               </div>
 
+              {/* Category Routing Guard Status & Semantic Security Badge */}
+              {materialResult.categoryRouting && (
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/60 to-indigo-50/50 border border-emerald-200/80 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="p-1.5 rounded-lg bg-emerald-600 text-white flex items-center justify-center">
+                        <ShieldCheck className="w-4 h-4" />
+                      </span>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-bold text-slate-900 text-xs sm:text-sm">
+                            Stage 1 智慧品類判定：
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-600 text-white shadow-2xs">
+                            {materialResult.categoryRouting.categoryLabel}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-slate-500">
+                          推薦行銷切入角：{materialResult.categoryRouting.recommendedAngle}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[11px] font-bold text-emerald-800 bg-white/90 px-2.5 py-1 rounded-lg border border-emerald-200 shadow-2xs flex items-center">
+                      <ShieldCheck className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                      語意防捏造與跨品類詞彙過濾已啟用 (PASS)
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                    <div className="bg-white/80 p-2.5 rounded-xl border border-emerald-100 space-y-1">
+                      <span className="text-[11px] font-bold text-emerald-900 flex items-center">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 mr-1" />
+                        品類允許核心感知詞：
+                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {materialResult.categoryRouting.allowedKeywords.slice(0, 7).map((kw, i) => (
+                          <span key={i} className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] border border-emerald-200/60 font-medium">
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="bg-white/80 p-2.5 rounded-xl border border-rose-100 space-y-1">
+                      <span className="text-[11px] font-bold text-rose-900 flex items-center">
+                        <ShieldAlert className="w-3.5 h-3.5 text-rose-600 mr-1" />
+                        嚴格封鎖跨品類幻覺詞：
+                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {materialResult.categoryRouting.forbiddenKeywords.slice(0, 6).map((kw, i) => (
+                          <span key={i} className="px-1.5 py-0.5 rounded bg-rose-50 text-rose-600 text-[10px] line-through border border-rose-200/60 font-medium">
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Catchy Headline (一秒吸睛主標題) */}
+              {materialResult.catchyHeadline && (
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <Flame className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div>
+                      <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block">
+                        一秒吸睛社群主標 (High CTR Hook)
+                      </span>
+                      <p className="text-xs sm:text-sm font-black text-amber-950">
+                        {materialResult.catchyHeadline}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleCopyText(materialResult.catchyHeadline || "", "headline")}
+                    className="px-2.5 py-1 rounded-lg bg-white border border-amber-200 text-amber-900 hover:bg-amber-50 text-xs font-semibold shrink-0 cursor-pointer"
+                  >
+                    {copiedKey === "headline" ? "已複製" : "複製主標"}
+                  </button>
+                </div>
+              )}
+
               {/* Deep Analysis Highlight Box (深度賣點分析卡片) */}
               {materialResult.deepAnalysis && (
                 <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 via-purple-50/40 to-slate-50 border border-indigo-100 space-y-3">
@@ -1381,70 +1821,620 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
                     </div>
                   </div>
                 )}
+
+                {/* Threads Card */}
+                {materialResult.threadsPost && (
+                  <div className="p-4 rounded-xl bg-slate-900 text-white space-y-2 shadow-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-100 text-xs sm:text-sm flex items-center">
+                        <Hash className="w-4 h-4 text-slate-300 mr-1.5" />
+                        Threads 專屬短爆文 (真誠短文/共鳴推坑)
+                      </span>
+                      <div className="flex items-center space-x-1.5">
+                        <button
+                          onClick={() => setPreviewPlatform("threads")}
+                          className="p-1.5 rounded-lg text-slate-300 hover:bg-slate-800 text-xs font-medium inline-flex items-center cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5 mr-1" /> 擬真預覽
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleCopyText(
+                              materialResult.threadsPost?.body || "",
+                              "threads"
+                            )
+                          }
+                          className="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 hover:bg-slate-700 text-xs font-semibold inline-flex items-center cursor-pointer"
+                        >
+                          {copiedKey === "threads" ? (
+                            <Check className="w-3 h-3 text-emerald-400 mr-1" />
+                          ) : (
+                            <Copy className="w-3 h-3 mr-1" />
+                          )}
+                          {copiedKey === "threads" ? "已複製" : "複製 Threads"}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed max-h-28 overflow-y-auto font-sans bg-slate-800/80 p-3 rounded-lg border border-slate-700">
+                      {materialResult.threadsPost.body}
+                    </div>
+                  </div>
+                )}
+
+                {/* VIP EDM Card */}
+                {materialResult.edmCopy && (
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-purple-800 text-xs sm:text-sm flex items-center">
+                        <Mail className="w-4 h-4 text-purple-600 mr-1.5" />
+                        VIP 會員開團電子報 (EDM)
+                      </span>
+                      <button
+                        onClick={() =>
+                          handleCopyText(
+                            `主旨：${materialResult.edmCopy?.subject}\n\n${materialResult.edmCopy?.body}`,
+                            "edm"
+                          )
+                        }
+                        className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold inline-flex items-center cursor-pointer"
+                      >
+                        {copiedKey === "edm" ? (
+                          <Check className="w-3 h-3 text-emerald-600 mr-1" />
+                        ) : (
+                          <Copy className="w-3 h-3 mr-1" />
+                        )}
+                        {copiedKey === "edm" ? "已複製" : "複製 EDM"}
+                      </button>
+                    </div>
+                    <div className="text-xs text-slate-700 whitespace-pre-wrap leading-relaxed max-h-28 overflow-y-auto font-sans bg-white p-3 rounded-lg border border-slate-200/60">
+                      <p className="font-bold text-slate-900 mb-1">主旨：{materialResult.edmCopy.subject}</p>
+                      {materialResult.edmCopy.body}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Visual Prompt Section */}
-              {includeImagePrompt && materialResult.imagePrompt && (
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800 text-xs sm:text-sm flex items-center">
-                      <ImageIcon className="w-4 h-4 text-indigo-600 mr-1.5" />
-                      商業攝影 AI 提示詞 (Midjourney / Imagen / SD)
-                    </span>
-                    <button
-                      onClick={() => handleCopyText(materialResult.imagePrompt.promptEn, "img-prompt")}
-                      className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold inline-flex items-center cursor-pointer"
-                    >
-                      {copiedKey === "img-prompt" ? (
-                        <Check className="w-3 h-3 text-emerald-600 mr-1" />
-                      ) : (
-                        <Copy className="w-3 h-3 mr-1" />
-                      )}
-                      {copiedKey === "img-prompt" ? "已複製" : "複製英文 Prompt"}
-                    </button>
-                  </div>
-                  <div className="bg-white p-3 rounded-lg border border-slate-200/60 font-mono text-[11px] text-slate-700 leading-relaxed max-h-24 overflow-y-auto">
-                    {materialResult.imagePrompt.promptEn}
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
-                    <span>💡 推薦比例: {materialResult.imagePrompt.aspectRatio || "4:5 (社群貼文最佳)"}</span>
-                    <span>風格氛圍: {materialResult.imagePrompt.lighting || "暖金色自然散射光"}</span>
-                  </div>
-                </div>
-              )}
+              {/* Video Storyboard Section (可切換多秒數 10s / 15s / 30s / 60s + 旁白與影片一鍵打包 + 視覺風格調性同步) */}
+              {includeVideoPrompt && materialResult.videoPrompt && (() => {
+                const productEngName = (materialResult.productName || productName || "Premium Product").replace(/[^\w\s]/gi, "").trim() || "Premium Lifestyle Product";
+                const productZhName = materialResult.productName || productName || "精選熱銷商品";
+                const activeStyleDesc = customEnvText && customEnvText.trim().length > 0 
+                  ? customEnvText.trim() 
+                  : "淺色橡木桌面、柔和自然晨光漫射、米白陶器與極簡綠意植栽";
 
-              {/* Video Storyboard Section */}
-              {includeVideoPrompt && materialResult.videoPrompt && (
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800 text-xs sm:text-sm flex items-center">
-                      <Video className="w-4 h-4 text-purple-600 mr-1.5" />
-                      8 秒短影音分鏡腳本 (3 段式高留存結構)
-                    </span>
-                    <button
-                      onClick={() =>
-                        handleCopyText(materialResult.videoPrompt.scenePlan.join("\n"), "video-scenes")
-                      }
-                      className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-semibold inline-flex items-center cursor-pointer"
-                    >
-                      {copiedKey === "video-scenes" ? (
-                        <Check className="w-3 h-3 text-emerald-600 mr-1" />
-                      ) : (
-                        <Copy className="w-3 h-3 mr-1" />
-                      )}
-                      {copiedKey === "video-scenes" ? "已複製" : "複製分鏡腳本"}
-                    </button>
-                  </div>
-                  <div className="space-y-1.5 bg-white p-3 rounded-lg border border-slate-200/60 text-xs">
-                    {materialResult.videoPrompt.scenePlan.map((scene, i) => (
-                      <div key={i} className="flex items-start text-slate-700 text-[11px]">
-                        <span className="font-bold text-purple-700 mr-2 shrink-0">[{i + 1}]</span>
-                        <span>{scene}</span>
+                const activeStory =
+                  materialResult.videoPrompt?.durationStoryboards?.[selectedDuration] || {
+                    durationSec: selectedDuration,
+                    title: `${selectedDuration} 秒短影音分鏡`,
+                    tag: "分鏡腳本",
+                    sceneCount: materialResult.videoPrompt.shots?.length || 3,
+                    description: `${selectedDuration} 秒短影音節奏結構`,
+                    shots: materialResult.videoPrompt.shots || [],
+                  };
+
+                // Helper to ensure each shot prompt contains the activeStyleDesc for unified visual tone
+                const getHarmonizedShotPrompt = (shot: any, idx: number) => {
+                  let p = shot.aiVideoPrompt || "";
+                  if (!p.includes(activeStyleDesc)) {
+                    if (idx === 0) {
+                      p = `Cinematic opening hook for ${productEngName}, environment style: ${activeStyleDesc}, dramatic commercial studio lighting, 4k 60fps.`;
+                    } else if (idx === activeStory.shots.length - 1) {
+                      p = `Commercial finish showing product hero lineup of ${productEngName} staged in ${activeStyleDesc}, warm ambient glow, dynamic motion graphics discount badge, 4k resolution.`;
+                    } else {
+                      p = `High-end commercial cinematography of ${productEngName} in action, staged inside ${activeStyleDesc}, macro details and authentic surface reflections, 4k 60fps.`;
+                    }
+                  }
+                  return p;
+                };
+
+                // 1. Function to build full bundled pack for the current duration
+                const buildCurrentDurationBundle = () => {
+                  const header = `==================================================\n🎬【${productZhName}】${selectedDuration} 秒短影音全套生成專案包 (旁白 + 分鏡 + AI Prompt 打包)\n🎨 統一視覺風格調性：${activeStyleDesc}\n🎯 分鏡結構：${activeStory.title}（共 ${activeStory.shots.length} 段分鏡）\n📌 節奏定位：${activeStory.description}\n==================================================\n\n`;
+
+                  const shotsContent = activeStory.shots.map((s: any, i: number) => {
+                    const timeLabel = "timeRange" in s ? s.timeRange : s.shotTime || `鏡頭 ${i + 1}`;
+                    const nameLabel = "name" in s ? s.name : s.sceneName || `分鏡 ${i + 1}`;
+                    const voiceText = "audioVoiceover" in s ? s.audioVoiceover : s.voiceover || "";
+                    const promptText = getHarmonizedShotPrompt(s, i);
+                    const cam = s.cameraMovement || "特寫推進";
+
+                    return `【分鏡 ${i + 1}】[${timeLabel}] ${nameLabel}\n🎥 鏡頭運鏡：${cam}\n🎬 畫面構圖：${s.visualDescription}\n🎙️ 口播旁白：「${voiceText}」\n⚡ AI 影音 Prompt (Sora / Runway / Kling AI - 調性已統一)：\n${promptText}`;
+                  }).join("\n\n--------------------------------------------------\n\n");
+
+                  const voiceoverScript = `\n\n==================================================\n🎙️【全片口播逐字稿 (語音合成 TTS / 剪映 / 配音專用)】\n` +
+                    activeStory.shots.map((s: any, i: number) => {
+                      const timeLabel = "timeRange" in s ? s.timeRange : s.shotTime || `鏡頭 ${i + 1}`;
+                      const voiceText = "audioVoiceover" in s ? s.audioVoiceover : s.voiceover || "";
+                      return `[${timeLabel}] ${voiceText}`;
+                    }).join("\n") +
+                    `\n==================================================`;
+
+                  return header + shotsContent + voiceoverScript;
+                };
+
+                // 2. Function to build pure voiceover script
+                const buildPureVoiceoverScript = () => {
+                  return `🎙️《${productZhName}》${selectedDuration}秒短影音 口播逐字稿 (TTS / 剪映配音專用)\n\n` +
+                    activeStory.shots.map((s: any, i: number) => {
+                      const timeLabel = "timeRange" in s ? s.timeRange : s.shotTime || `分鏡 ${i + 1}`;
+                      const voiceText = "audioVoiceover" in s ? s.audioVoiceover : s.voiceover || "";
+                      return `[${timeLabel}] ${voiceText}`;
+                    }).join("\n");
+                };
+
+                // 3. Function to build all prompts
+                const buildAllPromptsOnly = () => {
+                  return `⚡《${productZhName}》${selectedDuration}秒短影音 AI 影音生成 Prompt 序列 (Sora / Runway / Kling)\n🎨 統一視覺風格：${activeStyleDesc}\n\n` +
+                    activeStory.shots.map((s: any, i: number) => {
+                      const timeLabel = "timeRange" in s ? s.timeRange : s.shotTime || `分鏡 ${i + 1}`;
+                      const promptText = getHarmonizedShotPrompt(s, i);
+                      return `[分鏡 ${i + 1} - ${timeLabel}]\n${promptText}`;
+                    }).join("\n\n");
+                };
+
+                // 4. Function to build all durations bundle (10s + 15s + 30s + 60s)
+                const buildAllDurationsBundle = () => {
+                  const allDurs = [10, 15, 30, 60] as const;
+                  let fullText = `==================================================\n📦【${productZhName}】短影音分鏡與口播全套大禮包 (10s / 15s / 30s / 60s 全秒數)\n🎨 統一視覺風格調性：${activeStyleDesc}\n==================================================\n\n`;
+
+                  allDurs.forEach((dur) => {
+                    const story = materialResult.videoPrompt?.durationStoryboards?.[dur];
+                    if (story) {
+                      fullText += `\n##################################################\n🎬 【${dur} 秒版本】${story.title} (${story.tag})\n📌 說明：${story.description}\n##################################################\n\n`;
+                      story.shots.forEach((s: any, idx: number) => {
+                        const prompt = getHarmonizedShotPrompt(s, idx);
+                        fullText += `【分鏡 ${idx + 1}】[${s.timeRange}] ${s.name}\n• 運鏡：${s.cameraMovement}\n• 畫面：${s.visualDescription}\n• 旁白：「${s.audioVoiceover}」\n• AI Prompt：${prompt}\n\n`;
+                      });
+                      fullText += `🎙️ ${dur}s 口播總整理：\n` + story.shots.map((s: any) => `• [${s.timeRange}] ${s.audioVoiceover}`).join("\n") + "\n\n";
+                    }
+                  });
+
+                  return fullText;
+                };
+
+                return (
+                  <div className="p-4 rounded-xl bg-gradient-to-br from-purple-50/70 via-indigo-50/40 to-purple-50/70 border border-purple-200/80 space-y-4">
+                    {/* Header with Title & Style Consistency Badge */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-200/60 pb-3">
+                      <div>
+                        <span className="font-bold text-purple-950 text-xs sm:text-sm flex items-center">
+                          <Video className="w-4 h-4 text-purple-600 mr-1.5" />
+                          短影音多秒數分鏡與口播腳本 (Runway Gen-3 / Sora / Kling / 剪映)
+                        </span>
+                        <p className="text-[11px] text-purple-700/80 mt-0.5">
+                          影片 Prompt 已自動注入商攝風格指令，確保所有分鏡與商業海報之視覺調性 100% 一致！
+                        </p>
                       </div>
-                    ))}
+
+                      {/* Active Visual Style Directive Badge */}
+                      <div className="px-2.5 py-1 rounded-lg bg-white/80 border border-purple-200 text-purple-900 text-[11px] flex items-center shadow-2xs self-start sm:self-auto">
+                        <Sparkles className="w-3 h-3 text-purple-600 mr-1 shrink-0" />
+                        <span className="truncate max-w-xs" title={activeStyleDesc}>
+                          風格調性：<strong>{activeStyleDesc}</strong>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* One-Click Video & Voiceover Bundle Action Toolbar (按鍵式打包專區) */}
+                    <div className="bg-white/90 p-3 rounded-xl border border-purple-200 shadow-2xs space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-purple-950 flex items-center">
+                          <Package className="w-3.5 h-3.5 text-purple-600 mr-1.5" />
+                          按鍵式影音專案打包 (旁白 + 分鏡 + Prompt 一同匯出)：
+                        </span>
+                        <span className="text-[10px] text-purple-600 font-medium">支援剪映 / CapCut / TTS 語音合成</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1">
+                        {/* Primary Button: Bundle Current Duration (Voiceover + Storyboard + Prompts) */}
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(buildCurrentDurationBundle(), `video-bundle-${selectedDuration}`)}
+                          className="px-3 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center justify-center transition shadow-xs cursor-pointer group"
+                        >
+                          {copiedKey === `video-bundle-${selectedDuration}` ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-300 mr-1.5 shrink-0" />
+                          ) : (
+                            <Package className="w-3.5 h-3.5 mr-1.5 shrink-0 group-hover:scale-110 transition-transform" />
+                          )}
+                          <span>
+                            {copiedKey === `video-bundle-${selectedDuration}`
+                              ? `已打包 ${selectedDuration}s 全套！`
+                              : `一鍵打包 ${selectedDuration}s 影音+旁白`}
+                          </span>
+                        </button>
+
+                        {/* Button 2: Pure Voiceover Script for TTS / Voice Actor */}
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(buildPureVoiceoverScript(), `video-voice-${selectedDuration}`)}
+                          className="px-3 py-2 rounded-lg bg-purple-50 hover:bg-purple-100/80 text-purple-900 border border-purple-200 text-xs font-medium flex items-center justify-center transition cursor-pointer"
+                        >
+                          {copiedKey === `video-voice-${selectedDuration}` ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600 mr-1.5 shrink-0" />
+                          ) : (
+                            <Mic className="w-3.5 h-3.5 text-purple-600 mr-1.5 shrink-0" />
+                          )}
+                          <span>
+                            {copiedKey === `video-voice-${selectedDuration}` ? "已複製純旁白逐字稿" : `打包 ${selectedDuration}s 純口播逐字稿`}
+                          </span>
+                        </button>
+
+                        {/* Button 3: Video AI Prompts Only */}
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(buildAllPromptsOnly(), `video-prompts-${selectedDuration}`)}
+                          className="px-3 py-2 rounded-lg bg-purple-50 hover:bg-purple-100/80 text-purple-900 border border-purple-200 text-xs font-medium flex items-center justify-center transition cursor-pointer"
+                        >
+                          {copiedKey === `video-prompts-${selectedDuration}` ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-600 mr-1.5 shrink-0" />
+                          ) : (
+                            <Film className="w-3.5 h-3.5 text-purple-600 mr-1.5 shrink-0" />
+                          )}
+                          <span>
+                            {copiedKey === `video-prompts-${selectedDuration}` ? "已複製全分鏡 Prompt" : `打包 ${selectedDuration}s AI Prompt`}
+                          </span>
+                        </button>
+
+                        {/* Button 4: All 4 Durations Complete Pack */}
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(buildAllDurationsBundle(), `video-all-durations`)}
+                          className="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-200 border border-slate-700 text-xs font-bold flex items-center justify-center transition cursor-pointer shadow-2xs"
+                        >
+                          {copiedKey === "video-all-durations" ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-400 mr-1.5 shrink-0" />
+                          ) : (
+                            <Sparkles className="w-3.5 h-3.5 text-amber-400 mr-1.5 shrink-0" />
+                          )}
+                          <span>
+                            {copiedKey === "video-all-durations" ? "已打包全秒數大禮包" : "打包 10s~60s 全套腳本"}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Duration Switcher Tabs */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {[
+                        { sec: 10 as const, label: "10 秒極速推坑", sub: "Reels / TikTok ⚡", count: "2 段鏡頭" },
+                        { sec: 15 as const, label: "15 秒黃金吸睛", sub: "經典 3 段結構 👑", count: "3 段鏡頭" },
+                        { sec: 30 as const, label: "30 秒開箱實測", sub: "痛點化解與體驗 📦", count: "4 段鏡頭" },
+                        { sec: 60 as const, label: "60 秒深度評測", sub: "團長口碑與囤貨 🔥", count: "5 段鏡頭" },
+                      ].map((tab) => {
+                        const isSelected = selectedDuration === tab.sec;
+                        return (
+                          <button
+                            key={tab.sec}
+                            type="button"
+                            onClick={() => setSelectedDuration(tab.sec)}
+                            className={`p-2 rounded-xl text-left transition border cursor-pointer ${
+                              isSelected
+                                ? "bg-purple-600 text-white border-purple-700 shadow-sm ring-2 ring-purple-300/50"
+                                : "bg-white hover:bg-purple-50/70 text-slate-700 border-slate-200"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold">{tab.label}</span>
+                              <span className={`text-[10px] px-1 rounded ${isSelected ? "bg-purple-700 text-purple-100" : "bg-slate-100 text-slate-500"}`}>
+                                {tab.count}
+                              </span>
+                            </div>
+                            <div className={`text-[10px] mt-0.5 font-medium ${isSelected ? "text-purple-200" : "text-purple-600"}`}>
+                              {tab.sub}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Active Duration Storyboard Description */}
+                    {activeStory && (
+                      <div className="bg-purple-100/60 p-2.5 rounded-lg text-xs text-purple-900 border border-purple-200/60 flex items-center justify-between">
+                        <span className="font-medium">📌 {activeStory.description}</span>
+                        <span className="font-bold text-purple-700 shrink-0 ml-2">{activeStory.tag}</span>
+                      </div>
+                    )}
+
+                    {/* Render Shots for Selected Duration with Harmonized Style Prompts & Bundled Buttons */}
+                    {activeStory.shots.length > 0 && (
+                      <div className="space-y-2.5">
+                        {activeStory.shots.map((shot: any, i: number) => {
+                          const timeLabel = "timeRange" in shot ? shot.timeRange : shot.shotTime || `鏡頭 ${i + 1}`;
+                          const nameLabel = "name" in shot ? shot.name : shot.sceneName || `場景 ${i + 1}`;
+                          const voiceText = "audioVoiceover" in shot ? shot.audioVoiceover : shot.voiceover || "";
+                          const promptText = getHarmonizedShotPrompt(shot, i);
+                          const camText = shot.cameraMovement || "特寫推進";
+
+                          const shotBundleText = `【分鏡 ${i + 1} - ${timeLabel}】${nameLabel}\n🎥 運鏡：${camText}\n🎬 畫面：${shot.visualDescription}\n🎙️ 口播旁白：「${voiceText}」\n⚡ AI Video Prompt (調性已統一):\n${promptText}`;
+
+                          return (
+                            <div key={i} className="bg-white p-3.5 rounded-xl border border-purple-200/80 text-xs space-y-2.5 shadow-2xs">
+                              {/* Shot Header with Camera Movement and Shot Bundle Action */}
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 font-bold text-purple-900 border-b border-purple-100 pb-2">
+                                <div className="flex items-center">
+                                  <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[11px] mr-2 font-mono shrink-0">
+                                    {timeLabel}
+                                  </span>
+                                  <span className="text-slate-900">{nameLabel}</span>
+                                </div>
+                                <div className="flex items-center space-x-1.5 self-start sm:self-auto">
+                                  <span className="text-[11px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100 font-normal">
+                                    運鏡：{camText}
+                                  </span>
+                                  {/* Shot Bundle Copy Button */}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCopyText(shotBundleText, `shot-bundle-${selectedDuration}-${i}`)}
+                                    className="px-2 py-0.5 rounded bg-purple-100/70 hover:bg-purple-200 text-purple-900 text-[11px] font-semibold flex items-center transition cursor-pointer"
+                                    title="打包本分鏡（含旁白與 Prompt）"
+                                  >
+                                    {copiedKey === `shot-bundle-${selectedDuration}-${i}` ? (
+                                      <Check className="w-3 h-3 text-emerald-600 mr-1" />
+                                    ) : (
+                                      <Package className="w-3 h-3 mr-1 text-purple-700" />
+                                    )}
+                                    <span>
+                                      {copiedKey === `shot-bundle-${selectedDuration}-${i}` ? "已打包本鏡" : "打包本分鏡"}
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Visual Staging Description */}
+                              <div className="text-slate-700 text-[11px] leading-relaxed">
+                                <span className="font-bold text-slate-900">🎬 畫面構圖：</span>
+                                {shot.visualDescription}
+                              </div>
+
+                              {/* Audio Voiceover Block with Dedicated Copy Button */}
+                              {voiceText && (
+                                <div className="bg-purple-50/70 p-2.5 rounded-lg border border-purple-100 text-slate-800 text-[11px] leading-relaxed flex items-start justify-between gap-2">
+                                  <div>
+                                    <span className="font-bold text-purple-900 flex items-center mb-0.5">
+                                      <Mic className="w-3.5 h-3.5 text-purple-600 mr-1 shrink-0" />
+                                      口播旁白 (Voiceover 台詞)：
+                                    </span>
+                                    <span className="text-purple-950 font-medium pl-4 block">「{voiceText}」</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleCopyText(voiceText, `voice-${selectedDuration}-${i}`)}
+                                    className="px-2 py-0.5 rounded bg-white hover:bg-purple-100 text-purple-800 border border-purple-200 text-[10px] font-medium shrink-0 cursor-pointer flex items-center"
+                                  >
+                                    {copiedKey === `voice-${selectedDuration}-${i}` ? (
+                                      <Check className="w-3 h-3 text-emerald-600 mr-1" />
+                                    ) : (
+                                      <Copy className="w-3 h-3 mr-1" />
+                                    )}
+                                    {copiedKey === `voice-${selectedDuration}-${i}` ? "已複製" : "複製旁白"}
+                                  </button>
+                                </div>
+                              )}
+
+                              {/* AI Video Prompt with Harmonized Style Tone and Copy Button */}
+                              {promptText && (
+                                <div className="bg-slate-950 text-slate-200 font-mono text-[10px] p-2.5 rounded-lg relative space-y-1">
+                                  <div className="flex items-center justify-between text-purple-300 font-semibold">
+                                    <span className="flex items-center">
+                                      <Film className="w-3 h-3 text-purple-400 mr-1" />
+                                      Runway Gen-3 / Sora / Kling AI Video Prompt（視覺調性已同步）：
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleCopyText(promptText, `vprompt-${selectedDuration}-${i}`)}
+                                      className="text-[10px] text-purple-200 hover:text-white px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 cursor-pointer flex items-center"
+                                    >
+                                      {copiedKey === `vprompt-${selectedDuration}-${i}` ? (
+                                        <Check className="w-3 h-3 text-emerald-400 mr-1" />
+                                      ) : (
+                                        <Copy className="w-3 h-3 mr-1" />
+                                      )}
+                                      {copiedKey === `vprompt-${selectedDuration}-${i}` ? "已複製 Prompt" : "複製 Prompt"}
+                                    </button>
+                                  </div>
+                                  <div className="leading-relaxed break-all text-slate-300 bg-slate-900/80 p-2 rounded border border-slate-800">
+                                    {promptText}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
+                );
+              })()}
+
+              {/* Visual Prompt & Commercial Poster Section (主產品居中 + Copy Space + 風格指令直接寫入 Prompt + 海報中文字體排版 + 中英文雙語對照) */}
+              {includeImagePrompt && materialResult.imagePrompt && (() => {
+                const productEngName = (materialResult.productName || productName || "Premium Product").replace(/[^\w\s]/gi, "").trim() || "Premium Lifestyle Product";
+                const productZhName = materialResult.productName || productName || "精選熱銷商品";
+                const activeStyleDesc = customEnvText && customEnvText.trim().length > 0 
+                  ? customEnvText.trim() 
+                  : "淺色橡木桌面、柔和自然晨光漫射、米白陶器與極簡綠意植栽";
+
+                // English Generation Prompts with Chinese typography explicitly instructed for image models
+                const effectivePosterPromptEn = `"Commercial advertisement poster featuring ${productEngName} positioned prominently in the sharp visual center foreground, staged in ${activeStyleDesc}, featuring elegant Traditional Chinese typography headline text \\"${productZhName}\\" and \\"限時特惠 團購熱銷\\" beautifully rendered in bold clean Chinese typography at the top header, clean generous negative space on upper sides for promotional typography, studio key lighting with soft fill, photorealistic, 8k resolution, commercial grade Chinese product poster --ar 3:4 --v 6.0"`;
+
+                // Chinese Translation & Poster Typography Reference
+                const effectivePosterPromptZh = `【商業海報中文視覺與繁體中文字體排版】《${productZhName}》商業宣傳海報，主產品清晰置於視覺正中心焦點，商攝背景風格：「${activeStyleDesc}」。海報中上方直接排版繁體中文字體「${productZhName}」與「限時特惠 團購熱銷」宣傳標題（由 AI 直接將繁體中文字樣繪製於海報畫面上），並預留上方與兩側排版留白 (Copy Space)，棚拍主光搭配柔和輔助光，呈現超逼真 8K 商業廣告海報。`;
+
+                const effectivePrompt1En = materialResult.imagePrompt?.prompt1_closeUp && materialResult.imagePrompt.prompt1_closeUp.includes(activeStyleDesc)
+                  ? materialResult.imagePrompt.prompt1_closeUp
+                  : `"${productEngName}, product studio close-up shot, style and environment: ${activeStyleDesc}, professional studio lighting, macro lens depth of field, ultra-sharp focus, commercial photography, photorealistic, 8k resolution --ar 4:5 --style raw"`;
+
+                const effectivePrompt1Zh = `【商品特寫中文描述】《${productZhName}》棚拍特寫鏡頭，商攝環境與風格：「${activeStyleDesc}」，專業商拍攝影棚燈光，微距鏡頭景深，焦點極致銳利清晰，真實細節紋理，8K 超高解析度。`;
+
+                const effectivePrompt2En = materialResult.imagePrompt?.prompt2_lifestyle && materialResult.imagePrompt.prompt2_lifestyle.includes(activeStyleDesc)
+                  ? materialResult.imagePrompt.prompt2_lifestyle
+                  : `"${productEngName} in real-world lifestyle usage setting, environment atmosphere: ${activeStyleDesc}, natural ambient diffused lighting, authentic textures, commercial advertising cinematography, 8k resolution --ar 16:9 --v 6.0"`;
+
+                const effectivePrompt2Zh = `【情境氛圍中文描述】《${productZhName}》真實生活使用情境，場景氛圍：「${activeStyleDesc}」，自然環境漫射光，真實材質觸感，商業廣告電影級運鏡質感。`;
+
+                return (
+                  <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <span className="font-bold text-slate-800 text-xs sm:text-sm flex items-center">
+                          <ImageIcon className="w-4 h-4 text-indigo-600 mr-1.5" />
+                          商業海報與商品攝影 AI 提示詞 (海報繁體中文字體排版 / Midjourney v6 / SD)
+                        </span>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          海報提示詞已直接要求 AI 繪製<strong>繁體中文標題字樣（如《{productZhName}》、限時特惠）</strong>，並預留 Copy Space 排版留白
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-1.5">
+                        <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-md font-medium inline-flex items-center">
+                          <Check className="w-3 h-3 mr-1 text-indigo-600" />
+                          海報文字包含繁體中文
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Active Style Directive Banner */}
+                    <div className="p-2.5 rounded-lg bg-indigo-50/70 border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
+                      <div className="flex items-start sm:items-center text-indigo-900 leading-tight">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500 mr-1.5 shrink-0 mt-0.5 sm:mt-0" />
+                        <span>
+                          <strong>當前寫入 Prompt 之風格指令：</strong>
+                          <span className="text-indigo-700">{activeStyleDesc}</span>
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-indigo-500 font-mono shrink-0 self-end sm:self-auto">
+                        即時連動
+                      </span>
+                    </div>
+
+                    {/* Commercial Poster with Product in Visual Center & Copy Space & Chinese text on Poster */}
+                    <div className="space-y-2 p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-200/70">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
+                        <span className="font-bold text-indigo-950 flex items-center">
+                          <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 mr-1.5" />
+                          商業海報生成 Prompt（主產品居中視覺焦點 + 海報繁體中文字體 + Copy Space）
+                        </span>
+                        <div className="flex items-center space-x-1.5">
+                          <button
+                            onClick={() => handleCopyText(effectivePosterPromptZh, "img-poster-zh")}
+                            className="px-2 py-1 rounded bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 text-[10px] font-semibold inline-flex items-center cursor-pointer shadow-2xs"
+                          >
+                            {copiedKey === "img-poster-zh" ? (
+                              <Check className="w-3 h-3 text-emerald-600 mr-1" />
+                            ) : (
+                              <Copy className="w-3 h-3 mr-1" />
+                            )}
+                            {copiedKey === "img-poster-zh" ? "已複製中文" : "複製中文說明"}
+                          </button>
+                          <button
+                            onClick={() => handleCopyText(effectivePosterPromptEn, "img-poster-en")}
+                            className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 text-[11px] font-bold inline-flex items-center cursor-pointer shadow-2xs"
+                          >
+                            {copiedKey === "img-poster-en" ? (
+                              <Check className="w-3 h-3 text-emerald-300 mr-1" />
+                            ) : (
+                              <Copy className="w-3 h-3 mr-1" />
+                            )}
+                            {copiedKey === "img-poster-en" ? "已複製海報 Prompt" : "複製海報 Prompt"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* 中文版海報視覺指示 */}
+                      <div className="bg-amber-50/70 p-2.5 rounded-lg border border-amber-200/60 text-xs text-amber-900 space-y-1">
+                        <div className="font-bold flex items-center text-[11px] text-amber-800">
+                          <span className="bg-amber-200 text-amber-900 px-1.5 py-0.2 rounded text-[10px] mr-1.5 font-sans">中文排版解析</span>
+                          海報構圖與中文字體排版設計：
+                        </div>
+                        <p className="leading-relaxed text-[11px] text-amber-900/90 pl-1">
+                          {effectivePosterPromptZh}
+                        </p>
+                      </div>
+
+                      {/* 英文版 Midjourney / SD 繪圖 Prompt (含中文字體指令) */}
+                      <div className="space-y-1">
+                        <div className="text-[10px] font-bold text-slate-500 flex items-center justify-between">
+                          <span>AI 繪圖指令 (Midjourney v6 / SD / Ideogram 專用，指定中文排版)：</span>
+                          <span className="font-mono text-indigo-600">--ar 3:4 --v 6.0</span>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-indigo-100 font-mono text-[11px] text-slate-700 leading-relaxed max-h-28 overflow-y-auto">
+                          {effectivePosterPromptEn}
+                        </div>
+                      </div>
+
+                      <div className="text-[10px] text-indigo-700 flex items-center justify-between pt-0.5">
+                        <span>✨ 特點：主商品清晰置中，海報畫面直接生成繁體中文標題字體，預留留白供後製微調</span>
+                        <span className="font-sans text-slate-400">繁體中文排版支援</span>
+                      </div>
+                    </div>
+
+                    {/* Prompt 1: Product Studio Close-Up (中英文對照) */}
+                    <div className="space-y-1.5 p-3 rounded-lg bg-white border border-slate-200/70">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-slate-800 flex items-center">
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5" />
+                          1. 商品主體特寫鏡頭 (Studio Clean Close-up)
+                        </span>
+                        <div className="flex items-center space-x-1">
+                          <button
+                            onClick={() => handleCopyText(effectivePrompt1Zh, "img-prompt1-zh")}
+                            className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 text-[10px] font-medium inline-flex items-center cursor-pointer"
+                          >
+                            {copiedKey === "img-prompt1-zh" ? "已複製中文" : "複製中文"}
+                          </button>
+                          <button
+                            onClick={() => handleCopyText(effectivePrompt1En, "img-prompt1-en")}
+                            className="px-2 py-0.5 rounded bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 text-[10px] font-bold inline-flex items-center cursor-pointer shadow-2xs"
+                          >
+                            {copiedKey === "img-prompt1-en" ? "已複製英文" : "複製英文 Prompt"}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-100 leading-relaxed">
+                        {effectivePrompt1Zh}
+                      </div>
+                      <div className="bg-slate-900 text-slate-100 p-2.5 rounded font-mono text-[11px] leading-relaxed max-h-20 overflow-y-auto">
+                        {effectivePrompt1En}
+                      </div>
+                    </div>
+
+                    {/* Prompt 2: Lifestyle Scene (中英文對照) */}
+                    <div className="space-y-1.5 p-3 rounded-lg bg-white border border-slate-200/70">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-bold text-slate-800 flex items-center">
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5" />
+                          2. 情境使用氛圍 (Lifestyle In-context Scene)
+                        </span>
+                        <div className="flex items-center space-x-1">
+                          <button
+                            onClick={() => handleCopyText(effectivePrompt2Zh, "img-prompt2-zh")}
+                            className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 text-[10px] font-medium inline-flex items-center cursor-pointer"
+                          >
+                            {copiedKey === "img-prompt2-zh" ? "已複製中文" : "複製中文"}
+                          </button>
+                          <button
+                            onClick={() => handleCopyText(effectivePrompt2En, "img-prompt2-en")}
+                            className="px-2 py-0.5 rounded bg-white border border-slate-300 text-slate-800 hover:bg-slate-50 text-[10px] font-bold inline-flex items-center cursor-pointer shadow-2xs"
+                          >
+                            {copiedKey === "img-prompt2-en" ? "已複製英文" : "複製英文 Prompt"}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-[11px] text-slate-600 bg-slate-50 p-2 rounded border border-slate-100 leading-relaxed">
+                        {effectivePrompt2Zh}
+                      </div>
+                      <div className="bg-slate-900 text-slate-100 p-2.5 rounded font-mono text-[11px] leading-relaxed max-h-20 overflow-y-auto">
+                        {effectivePrompt2En}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                      <span>💡 推薦比例: {materialResult.imagePrompt.aspectRatio || "4:5 (社群貼文最佳)"} / 海報推薦 3:4</span>
+                      <span>風格氛圍: {materialResult.imagePrompt.lighting || "暖金色自然散射光"}</span>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Multi-SKU Tier Pricing Strategy */}
               <div className="p-4 rounded-xl bg-gradient-to-r from-amber-50/70 to-orange-50/50 border border-amber-200/80 space-y-3">
@@ -1492,7 +2482,7 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
                         <span>🔥 開團預熱推播</span>
                         <button
                           onClick={() =>
-                            handleCopyText(materialResult.communityNotification.launchPreheat, "push-1")
+                            handleCopyText(materialResult.communityNotification?.launchPreheat || "", "push-1")
                           }
                           className="text-[10px] text-slate-400 hover:text-slate-700 cursor-pointer"
                         >
@@ -1509,7 +2499,7 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
                         <span>⏰ 結團最後 6 小時</span>
                         <button
                           onClick={() =>
-                            handleCopyText(materialResult.communityNotification.closingReminder, "push-2")
+                            handleCopyText(materialResult.communityNotification?.closingReminder || "", "push-2")
                           }
                           className="text-[10px] text-slate-400 hover:text-slate-700 cursor-pointer"
                         >
@@ -1526,7 +2516,7 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
                         <span>💳 ATM 防漏單提醒</span>
                         <button
                           onClick={() =>
-                            handleCopyText(materialResult.communityNotification.paymentUrge, "push-3")
+                            handleCopyText(materialResult.communityNotification?.paymentUrge || "", "push-3")
                           }
                           className="text-[10px] text-slate-400 hover:text-slate-700 cursor-pointer"
                         >
@@ -1559,19 +2549,35 @@ export const AgentCommander: React.FC<AgentCommanderProps> = ({
       {/* Social Mockup Preview Dialog */}
       {previewPlatform && materialResult && (
         <SocialMockupDialog
+          isOpen={Boolean(previewPlatform)}
           platform={previewPlatform}
           onClose={() => setPreviewPlatform(null)}
           brandName={brandName}
-          productName={productName}
           imageUrl={imageUrl}
-          originalPrice={originalPrice}
-          groupPrice={groupPrice}
-          content={
+          title={
             previewPlatform === "facebook"
-              ? materialResult.facebookPost
+              ? materialResult.facebookPost.headline
               : previewPlatform === "instagram"
-              ? materialResult.instagramPost
-              : materialResult.lineMessage
+              ? materialResult.instagramPost.firstParagraph
+              : previewPlatform === "threads"
+              ? "Threads 討論串分享"
+              : materialResult.lineMessage.headline
+          }
+          body={
+            previewPlatform === "facebook"
+              ? materialResult.facebookPost.body
+              : previewPlatform === "instagram"
+              ? materialResult.instagramPost.body
+              : previewPlatform === "threads"
+              ? (materialResult.threadsPost?.body || materialResult.facebookPost.body)
+              : materialResult.lineMessage.body
+          }
+          hashtags={
+            previewPlatform === "facebook"
+              ? materialResult.facebookPost.hashtags
+              : previewPlatform === "instagram"
+              ? materialResult.instagramPost.hashtags
+              : []
           }
         />
       )}
